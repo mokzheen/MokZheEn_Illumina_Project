@@ -7,7 +7,7 @@ This is a simple Flash Card Game developed using C# and WPF. The game helps user
 - Practice arithmetic operations: addition (+), subtraction (-), multiplication (×), and division (÷).
 - For subtraction, ensures the first number is always larger than or equal to the second number.
 - For division, ensures both numbers are non-zero, the first number is divisible by the second number, and the result is an integer.
-- Track which number combinations have been shown to ensure all 169 pairs are eventually displayed.
+- Track which number combinations have been shown to ensure all pairs are eventually displayed.
 - Simple and intuitive user interface.
 - Scoring system: award one point for correct answers, subtract one point for incorrect answers.
 - Countdown timer for one minute of play.
