@@ -9,61 +9,61 @@ namespace FlashCardGame
 {
     public partial class MainWindow : Window
     {
-        private Random random = new Random();
-        private int number1;
-        private int number2;
-        private int score;
-        private int timeLeft;
-        private DispatcherTimer timer;
-        private HashSet<string> shownPairs;
-        private List<string> allPairs;
+        private readonly Random _random = new Random();
+        private int _number1;
+        private int _number2;
+        private int _score;
+        private int _timeLeft;
+        private readonly DispatcherTimer _timer;
+        private HashSet<string> _shownPairs;
+        private List<string> _allPairs;
 
         public MainWindow()
         {
             InitializeComponent();
-            timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += Timer_Tick;
+            _timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            _timer.Tick += Timer_Tick;
             InitializePairs();
+            ToggleButtons(false); // Ensure buttons are disabled initially
         }
 
         private void InitializePairs()
         {
-            allPairs = new List<string>();
+            _allPairs = new List<string>();
             for (int i = 0; i <= 12; i++)
             {
                 for (int j = 0; j <= 12; j++)
                 {
-                    allPairs.Add($"{i},{j}");
+                    _allPairs.Add($"{i},{j}");
                 }
             }
-            shownPairs = new HashSet<string>();
+            _shownPairs = new HashSet<string>();
         }
 
         private void StartNewGame()
         {
-            score = 0;
-            timeLeft = 60;
-            shownPairs.Clear(); // Reset the shown pairs for a new game
-            ScoreText.Text = $"Score: {score}";
-            TimerText.Text = $"Time Left: {timeLeft}";
+            _score = 0;
+            _timeLeft = 60;
+            _shownPairs.Clear();
+            UpdateScoreAndTime();
             StartGame();
-            timer.Start();
+            _timer.Start();
+            StartButton.IsEnabled = false;
         }
 
         private void StartGame()
         {
             GenerateQuestion();
-            ResultText.Text = string.Empty;
-            AnswerInput.Clear();
-            AnswerInput.Focus();
-            SubmitButton.IsEnabled = true;
-            EndButton.IsEnabled = true;
+            ClearInputs();
+            ToggleButtons(true);
         }
 
         private void GenerateQuestion()
         {
-            if (shownPairs.Count == allPairs.Count)
+            if (_shownPairs.Count == _allPairs.Count)
             {
                 InitializePairs();
             }
@@ -71,105 +71,102 @@ namespace FlashCardGame
             string operation = ((ComboBoxItem)OperationSelector.SelectedItem).Content.ToString();
             do
             {
-                if (operation == "÷")
-                {
-                    number2 = random.Next(1, 13); // Ensure number2 is never 0 for division
-                    number1 = number2 * random.Next(1, 13); // Ensure number1 is a multiple of number2
-                }
-                else
-                {
-                    number1 = random.Next(0, 13);
-                    number2 = random.Next(0, 13);
-                }
+                GenerateNumbers(operation);
+            } while (_shownPairs.Contains($"{_number1},{_number2}"));
 
-                if (operation == "-" && number1 < number2)
-                {
-                    var temp = number1;
-                    number1 = number2;
-                    number2 = temp;
-                }
+            _shownPairs.Add($"{_number1},{_number2}");
+            QuestionText.Text = $"{_number1} {operation} {_number2} = ?";
+        }
 
-            } while (shownPairs.Contains($"{number1},{number2}"));
+        private void GenerateNumbers(string operation)
+        {
+            if (operation == "÷")
+            {
+                _number2 = _random.Next(1, 13); // Ensure number2 is never 0 for division
+                _number1 = _number2 * _random.Next(1, 13); // Ensure number1 is a multiple of number2
+            }
+            else
+            {
+                _number1 = _random.Next(0, 13);
+                _number2 = _random.Next(0, 13);
+            }
 
-            shownPairs.Add($"{number1},{number2}");
-            QuestionText.Text = $"{number1} {operation} {number2} = ?";
+            if (operation == "-" && _number1 < _number2)
+            {
+                SwapNumbers();
+            }
+        }
+
+        private void SwapNumbers()
+        {
+            int temp = _number1;
+            _number1 = _number2;
+            _number2 = temp;
         }
 
         private void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
             string operation = ((ComboBoxItem)OperationSelector.SelectedItem).Content.ToString();
+            bool isValidInput = false;
+            bool isCorrect = false;
 
             if (operation == "÷")
             {
-                if (double.TryParse(AnswerInput.Text, out double answer))
+                if (double.TryParse(AnswerInput.Text, out double divisionAnswer))
                 {
-                    if (CheckAnswer(answer))
-                    {
-                        score++;
-                        ResultText.Text = "Correct!";
-                    }
-                    else
-                    {
-                        score--;
-                        ResultText.Text = "Incorrect!";
-                    }
-                    ScoreText.Text = $"Score: {score}";
-                    StartGame();
-                }
-                else
-                {
-                    ResultText.Text = "Please enter a valid number.";
+                    isValidInput = true;
+                    isCorrect = CheckAnswer(divisionAnswer);
                 }
             }
             else
             {
-                if (int.TryParse(AnswerInput.Text, out int answer))
+                if (int.TryParse(AnswerInput.Text, out int integerAnswer))
                 {
-                    if (CheckAnswer(answer))
-                    {
-                        score++;
-                        ResultText.Text = "Correct!";
-                    }
-                    else
-                    {
-                        score--;
-                        ResultText.Text = "Incorrect!";
-                    }
-                    ScoreText.Text = $"Score: {score}";
-                    StartGame();
-                }
-                else
-                {
-                    ResultText.Text = "Please enter a valid number.";
+                    isValidInput = true;
+                    isCorrect = CheckAnswer(integerAnswer);
                 }
             }
+
+            if (isValidInput)
+            {
+                UpdateScore(isCorrect);
+                ResultText.Text = isCorrect ? "Correct!" : "Incorrect!";
+                StartGame();
+            }
+            else
+            {
+                ResultText.Text = "Please enter a valid number.";
+                AnswerInput.Focus();
+                AnswerInput.SelectAll();
+            }
+        }
+
+        private void UpdateScore(bool isCorrect)
+        {
+            _score += isCorrect ? 1 : -1;
+            ScoreText.Text = $"Score: {_score}";
         }
 
         private bool CheckAnswer(double answer)
         {
             string operation = ((ComboBoxItem)OperationSelector.SelectedItem).Content.ToString();
-            switch (operation)
+            return operation switch
             {
-                case "+":
-                    return answer == number1 + number2;
-                case "-":
-                    return answer == number1 - number2;
-                case "×":
-                    return answer == number1 * number2;
-                case "÷":
-                    return Math.Abs(answer - (double)number1 / number2) < 0.001; // Allow a small tolerance for floating-point comparison
-                default:
-                    return false;
-            }
+                "+" => answer == _number1 + _number2,
+                "-" => answer == _number1 - _number2,
+                "×" => answer == _number1 * _number2,
+                "÷" => Math.Abs(answer - (double)_number1 / _number2) < 0.001, // Allow a small tolerance for floating-point comparison
+                _ => false
+            };
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            timeLeft--;
-            TimerText.Text = $"Time Left: {timeLeft}";
-            if (timeLeft == 0)
+            _timeLeft--;
+            TimerText.Text = $"Time Left: {_timeLeft}";
+            if (_timeLeft == 0)
             {
-                MessageBox.Show($"Time's up! Your final score is {score}");
+                MessageBox.Show($"Time's up! Your final score is {_score}");
                 EndGame();
             }
         }
@@ -181,21 +178,42 @@ namespace FlashCardGame
 
         private void EndButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show($"Game ended! Your final score is {score}");
+            MessageBox.Show($"Game ended! Your final score is {_score}");
             EndGame();
         }
 
         private void EndGame()
         {
-            timer.Stop();
-            SubmitButton.IsEnabled = false;
-            StartButton.IsEnabled = true;
-            EndButton.IsEnabled = false;
-            // Reset the score, time left, and clear the question
-            score = 0;
-            timeLeft = 60;
-            ScoreText.Text = $"Score: {score}";
-            TimerText.Text = $"Time Left: {timeLeft}";
+            _timer.Stop();
+            ToggleButtons(false);
+            ResetGame();
+        }
+
+        private void UpdateScoreAndTime()
+        {
+            ScoreText.Text = $"Score: {_score}";
+            TimerText.Text = $"Time Left: {_timeLeft}";
+        }
+
+        private void ClearInputs()
+        {
+            ResultText.Text = string.Empty;
+            AnswerInput.Clear();
+            AnswerInput.Focus();
+        }
+
+        private void ToggleButtons(bool isGameActive)
+        {
+            SubmitButton.IsEnabled = isGameActive;
+            EndButton.IsEnabled = isGameActive;
+            StartButton.IsEnabled = !isGameActive;
+        }
+
+        private void ResetGame()
+        {
+            _score = 0;
+            _timeLeft = 60;
+            UpdateScoreAndTime();
             QuestionText.Text = string.Empty;
             AnswerInput.Clear();
             ResultText.Text = string.Empty;
