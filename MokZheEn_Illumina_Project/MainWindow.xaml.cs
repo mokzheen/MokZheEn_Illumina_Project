@@ -44,7 +44,7 @@ namespace FlashCardGame
         {
             score = 0;
             timeLeft = 60;
-            shownPairs.Clear();
+            shownPairs.Clear(); // Reset the shown pairs for a new game
             ScoreText.Text = $"Score: {score}";
             TimerText.Text = $"Time Left: {timeLeft}";
             StartGame();
@@ -57,6 +57,8 @@ namespace FlashCardGame
             ResultText.Text = string.Empty;
             AnswerInput.Clear();
             AnswerInput.Focus();
+            SubmitButton.IsEnabled = true;
+            EndButton.IsEnabled = true;
         }
 
         private void GenerateQuestion()
@@ -66,41 +68,84 @@ namespace FlashCardGame
                 InitializePairs();
             }
 
+            string operation = ((ComboBoxItem)OperationSelector.SelectedItem).Content.ToString();
             do
             {
-                number1 = random.Next(0, 13);
-                number2 = random.Next(0, 13);
+                if (operation == "÷")
+                {
+                    number2 = random.Next(1, 13); // Ensure number2 is never 0 for division
+                    number1 = number2 * random.Next(1, 13); // Ensure number1 is a multiple of number2
+                }
+                else
+                {
+                    number1 = random.Next(0, 13);
+                    number2 = random.Next(0, 13);
+                }
+
+                if (operation == "-" && number1 < number2)
+                {
+                    var temp = number1;
+                    number1 = number2;
+                    number2 = temp;
+                }
+
             } while (shownPairs.Contains($"{number1},{number2}"));
 
             shownPairs.Add($"{number1},{number2}");
-            string operation = ((ComboBoxItem)OperationSelector.SelectedItem).Content.ToString();
             QuestionText.Text = $"{number1} {operation} {number2} = ?";
         }
 
         private void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(AnswerInput.Text, out int answer))
+            string operation = ((ComboBoxItem)OperationSelector.SelectedItem).Content.ToString();
+
+            if (operation == "÷")
             {
-                if (CheckAnswer(answer))
+                if (double.TryParse(AnswerInput.Text, out double answer))
                 {
-                    score++;
-                    ResultText.Text = "Correct!";
+                    if (CheckAnswer(answer))
+                    {
+                        score++;
+                        ResultText.Text = "Correct!";
+                    }
+                    else
+                    {
+                        score--;
+                        ResultText.Text = "Incorrect!";
+                    }
+                    ScoreText.Text = $"Score: {score}";
+                    StartGame();
                 }
                 else
                 {
-                    score--;
-                    ResultText.Text = "Incorrect!";
+                    ResultText.Text = "Please enter a valid number.";
                 }
-                ScoreText.Text = $"Score: {score}";
-                StartGame();
             }
             else
             {
-                ResultText.Text = "Please enter a valid number.";
+                if (int.TryParse(AnswerInput.Text, out int answer))
+                {
+                    if (CheckAnswer(answer))
+                    {
+                        score++;
+                        ResultText.Text = "Correct!";
+                    }
+                    else
+                    {
+                        score--;
+                        ResultText.Text = "Incorrect!";
+                    }
+                    ScoreText.Text = $"Score: {score}";
+                    StartGame();
+                }
+                else
+                {
+                    ResultText.Text = "Please enter a valid number.";
+                }
             }
         }
 
-        private bool CheckAnswer(int answer)
+        private bool CheckAnswer(double answer)
         {
             string operation = ((ComboBoxItem)OperationSelector.SelectedItem).Content.ToString();
             switch (operation)
@@ -112,7 +157,7 @@ namespace FlashCardGame
                 case "×":
                     return answer == number1 * number2;
                 case "÷":
-                    return number2 != 0 && answer == number1 / number2;
+                    return Math.Abs(answer - (double)number1 / number2) < 0.001; // Allow a small tolerance for floating-point comparison
                 default:
                     return false;
             }
@@ -124,8 +169,8 @@ namespace FlashCardGame
             TimerText.Text = $"Time Left: {timeLeft}";
             if (timeLeft == 0)
             {
-                timer.Stop();
                 MessageBox.Show($"Time's up! Your final score is {score}");
+                EndGame();
             }
         }
 
@@ -133,16 +178,27 @@ namespace FlashCardGame
         {
             StartNewGame();
         }
-    }
 
-    public class Card
-    {
-        public string Suit { get; set; }
-        public string Value { get; set; }
-
-        public override string ToString()
+        private void EndButton_Click(object sender, RoutedEventArgs e)
         {
-            return $"{Value} of {Suit}";
+            MessageBox.Show($"Game ended! Your final score is {score}");
+            EndGame();
+        }
+
+        private void EndGame()
+        {
+            timer.Stop();
+            SubmitButton.IsEnabled = false;
+            StartButton.IsEnabled = true;
+            EndButton.IsEnabled = false;
+            // Reset the score, time left, and clear the question
+            score = 0;
+            timeLeft = 60;
+            ScoreText.Text = $"Score: {score}";
+            TimerText.Text = $"Time Left: {timeLeft}";
+            QuestionText.Text = string.Empty;
+            AnswerInput.Clear();
+            ResultText.Text = string.Empty;
         }
     }
 }

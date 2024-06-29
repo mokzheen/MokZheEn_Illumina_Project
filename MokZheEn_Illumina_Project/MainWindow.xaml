@@ -16,7 +16,10 @@
             <TextBlock Name="ResultText" FontSize="24" Margin="10"/>
             <TextBlock Name="ScoreText" FontSize="24" Margin="10"/>
             <TextBlock Name="TimerText" FontSize="24" Margin="10"/>
-            <Button Name="StartButton" Content="Start Game" Click="StartButton_Click" FontSize="24" Margin="10"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Name="StartButton" Content="Start Game" Click="StartButton_Click" FontSize="24" Margin="10"/>
+                <Button Name="EndButton" Content="End Game" Click="EndButton_Click" FontSize="24" Margin="10"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>
