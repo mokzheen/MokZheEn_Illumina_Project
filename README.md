@@ -1,40 +1,30 @@
-Description
-The Flash Card Game is an educational application designed to help users practice basic arithmetic operations. Users can select an operation (addition, subtraction, multiplication, division) or choose to have random operations. The game generates questions based on the selected operation, and users have to input the correct answer. The game tracks the user's score and provides immediate feedback on each answer. The game session lasts for 60 seconds, and the objective is to score as high as possible.
+# Flash Card Game
 
-Features
-Supports four arithmetic operations: addition (+), subtraction (-), multiplication (×), and division (÷).
-Option to select a random operation mode.
-Tracks and displays the user's current score and highest score.
-Provides immediate feedback on correct and incorrect answers.
-Sound effects for correct and incorrect answers.
-Progress bar to visualize the remaining time.
-Instructions displayed on the UI for ease of use.
-How to Play
-Start the Game:
+This is a simple Flash Card Game developed using C# and WPF. The game helps users practice arithmetic operations (addition, subtraction, multiplication, and division) with randomly generated pairs of numbers between 0 and 12.
 
-Click on the "Start Game" button to begin a new game session.
-Select an Operation:
+## Features
 
-Choose an arithmetic operation from the dropdown menu. The available options are addition (+), subtraction (-), multiplication (×), division (÷), and random.
-Answer the Questions:
+- Practice arithmetic operations: addition (+), subtraction (-), multiplication (×), and division (÷).
+- For subtraction, ensures the first number is always larger than or equal to the second number.
+- For division, ensures both numbers are non-zero, the first number is divisible by the second number, and the result is an integer.
+- Track which number combinations have been shown to ensure all pairs are eventually displayed.
+- Simple and intuitive user interface.
+- Scoring system: award one point for correct answers, subtract one point for incorrect answers.
+- Countdown timer for one minute of play.
+- Immediate feedback on correct or incorrect answers.
+- End game button to manually stop the game, display the final score, and reset the game.
 
-A question will be displayed based on the selected operation.
-Enter the correct answer in the input box and click "Submit" to check your answer.
-Game Feedback:
+## Getting Started
 
-The game will provide immediate feedback on whether the answer was correct or incorrect.
-Correct answers will increment the score, while incorrect answers will decrement the score (unless the score is zero).
-End the Game:
+### Prerequisites
 
-The game lasts for 60 seconds. You can also click "End Game" to stop the game early.
-The final score will be displayed, and if it is higher than the previous highest score, it will be updated.
-Instructions:
+- Visual Studio 2022
+- .NET Core 3.1 or later
 
-Instructions are displayed at the top of the game window for quick reference.
-Game Controls
-Start Game Button: Starts a new game session.
-End Game Button: Ends the current game session early.
-Submit Button: Submits the entered answer for the current question.
-Project Files
-MainWindow.xaml: Contains the UI layout and elements.
-MainWindow.xaml.cs: Contains the logic for generating questions, handling user input, tracking scores, and managing the game timer.
+### Installation
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/mokzheen/MokZheEn_Illumina_Project.git
+   cd flash-card-game
