@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using System.Media; // for sound effects
+using System.Media;
 
 namespace FlashCardGame
 {
@@ -15,10 +15,12 @@ namespace FlashCardGame
         private int _number2;
         private int _score;
         private int _timeLeft;
-        private int _highScore = 0; // Track highest score
+        private int _highScore = 0;
         private readonly DispatcherTimer _timer;
         private HashSet<string> _shownPairs;
         private List<string> _allPairs;
+        private readonly string[] _operations = new[] { "+", "-", "×", "÷" }; // Array of operations
+        private string _currentOperation; // To keep track of the current operation
 
         public MainWindow()
         {
@@ -29,7 +31,7 @@ namespace FlashCardGame
             };
             _timer.Tick += Timer_Tick;
             InitializePairs();
-            ToggleButtons(false); // Ensure buttons are disabled initially
+            ToggleButtons(false);
         }
 
         private void InitializePairs()
@@ -72,13 +74,22 @@ namespace FlashCardGame
             }
 
             string operation = ((ComboBoxItem)OperationSelector.SelectedItem).Content.ToString();
+            if (operation == "Random")
+            {
+                _currentOperation = _operations[_random.Next(_operations.Length)];
+            }
+            else
+            {
+                _currentOperation = operation;
+            }
+
             do
             {
-                GenerateNumbers(operation);
+                GenerateNumbers(_currentOperation);
             } while (_shownPairs.Contains($"{_number1},{_number2}"));
 
             _shownPairs.Add($"{_number1},{_number2}");
-            QuestionText.Text = $"{_number1} {operation} {_number2} = ?";
+            QuestionText.Text = $"{_number1} {_currentOperation} {_number2} = ?";
         }
 
         private void GenerateNumbers(string operation)
@@ -109,11 +120,10 @@ namespace FlashCardGame
 
         private void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
-            string operation = ((ComboBoxItem)OperationSelector.SelectedItem).Content.ToString();
             bool isValidInput = false;
             bool isCorrect = false;
 
-            if (operation == "÷")
+            if (_currentOperation == "÷")
             {
                 if (double.TryParse(AnswerInput.Text, out double divisionAnswer))
                 {
@@ -173,8 +183,7 @@ namespace FlashCardGame
 
         private bool CheckAnswer(double answer)
         {
-            string operation = ((ComboBoxItem)OperationSelector.SelectedItem).Content.ToString();
-            return operation switch
+            return _currentOperation switch
             {
                 "+" => answer == _number1 + _number2,
                 "-" => answer == _number1 - _number2,
