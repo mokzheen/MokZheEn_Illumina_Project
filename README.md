@@ -21,7 +21,7 @@ This is a simple Flash Card Game developed using C# and WPF. The game helps user
 1. Start the Game:
    - Click on the "Start Game" button to begin a new game session.
    
-2.  Select an Operation:
+2. Select an Operation:
    - Choose an arithmetic operation from the dropdown menu. The available options are addition (+), subtraction (-), multiplication (×), division (÷), and random.
    
 3. Answer the Questions:
