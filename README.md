@@ -19,25 +19,25 @@ This is a simple Flash Card Game developed using C# and WPF. The game helps user
 
 ## How to Play
 1. Start the Game:
-   -Click on the "Start Game" button to begin a new game session.
+   - Click on the "Start Game" button to begin a new game session.
    
 3.  Select an Operation:
-   -Choose an arithmetic operation from the dropdown menu. The available options are addition (+), subtraction (-), multiplication (×), division (÷), and random.
+   - Choose an arithmetic operation from the dropdown menu. The available options are addition (+), subtraction (-), multiplication (×), division (÷), and random.
    
 4. Answer the Questions:
-   -A question will be displayed based on the selected operation.
-   -Enter the correct answer in the input box and click "Submit" to check your answer.
+   - A question will be displayed based on the selected operation.
+   - Enter the correct answer in the input box and click "Submit" to check your answer.
    
 5. Game Feedback:
-   -The game will provide immediate feedback on whether the answer was correct or incorrect.
-   -Correct answers will increment the score, while incorrect answers will decrement the score (unless the score is zero).
+   - The game will provide immediate feedback on whether the answer was correct or incorrect.
+   - Correct answers will increment the score, while incorrect answers will decrement the score (unless the score is zero).
    
 6. End the Game:
-   -The game lasts for 60 seconds. You can also click "End Game" to stop the game early.
-   -The final score will be displayed, and if it is higher than the previous highest score, it will be updated.
+   - The game lasts for 60 seconds. You can also click "End Game" to stop the game early.
+   - The final score will be displayed, and if it is higher than the previous highest score, it will be updated.
    
 7. Instructions:
-   -Instructions are displayed at the top of the game window for quick reference.
+   - Instructions are displayed at the top of the game window for quick reference.
 
 ### Game Controls
 
