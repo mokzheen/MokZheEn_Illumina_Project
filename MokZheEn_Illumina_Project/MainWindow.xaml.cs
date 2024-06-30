@@ -143,7 +143,14 @@ namespace FlashCardGame
 
         private void UpdateScore(bool isCorrect)
         {
-            _score += isCorrect ? 1 : -1;
+            if (isCorrect)
+            {
+                _score++;
+            }
+            else if (_score > 0)
+            {
+                _score--;
+            }
             ScoreText.Text = $"Score: {_score}";
         }
 
