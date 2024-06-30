@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using System.Media; // for sound effects
 
 namespace FlashCardGame
 {
@@ -14,6 +15,7 @@ namespace FlashCardGame
         private int _number2;
         private int _score;
         private int _timeLeft;
+        private int _highScore = 0; // Track highest score
         private readonly DispatcherTimer _timer;
         private HashSet<string> _shownPairs;
         private List<string> _allPairs;
@@ -52,6 +54,7 @@ namespace FlashCardGame
             StartGame();
             _timer.Start();
             StartButton.IsEnabled = false;
+            TimerProgressBar.Value = _timeLeft; // Initialize progress bar
         }
 
         private void StartGame()
@@ -131,6 +134,14 @@ namespace FlashCardGame
             {
                 UpdateScore(isCorrect);
                 ResultText.Text = isCorrect ? "Correct!" : "Incorrect!";
+                if (isCorrect)
+                {
+                    SystemSounds.Beep.Play(); // Sound effect for correct answer
+                }
+                else
+                {
+                    SystemSounds.Hand.Play(); // Sound effect for incorrect answer
+                }
                 StartGame();
             }
             else
@@ -151,7 +162,13 @@ namespace FlashCardGame
             {
                 _score--;
             }
-            ScoreText.Text = $"Score: {_score}";
+
+            if (_score > _highScore)
+            {
+                _highScore = _score;
+            }
+
+            ScoreText.Text = $"Score: {_score}\nHigh Score: {_highScore}";
         }
 
         private bool CheckAnswer(double answer)
@@ -171,6 +188,7 @@ namespace FlashCardGame
         {
             _timeLeft--;
             TimerText.Text = $"Time Left: {_timeLeft}";
+            TimerProgressBar.Value = _timeLeft; // Update progress bar
             if (_timeLeft == 0)
             {
                 MessageBox.Show($"Time's up! Your final score is {_score}");
@@ -198,7 +216,7 @@ namespace FlashCardGame
 
         private void UpdateScoreAndTime()
         {
-            ScoreText.Text = $"Score: {_score}";
+            ScoreText.Text = $"Score: {_score}\nHigh Score: {_highScore}";
             TimerText.Text = $"Time Left: {_timeLeft}";
         }
 
@@ -224,6 +242,7 @@ namespace FlashCardGame
             QuestionText.Text = string.Empty;
             AnswerInput.Clear();
             ResultText.Text = string.Empty;
+            TimerProgressBar.Value = _timeLeft; // Reset progress bar
         }
     }
 }
